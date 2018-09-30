@@ -1,11 +1,17 @@
-import axios from 'axios';
 import cheerio from 'cheerio';
+import axios from 'axios';
 import Queue from './Queue';
-import { getAbsoluteUrl, isBaseOf, isAbsoluteUrl, resolveUrl } from './Util';
+import { resolveUrl } from './UrlUtils';
 
 class Marvin {
-  constructor({ queue = new Queue() }) {
+  constructor({
+    queue = new Queue(),
+    minInterval = 2000,
+    randInterval = 5000
+  }) {
     this.queue = queue;
+    this.minInterval = minInterval;
+    this.randInterval = randInterval;
   }
 
   load({ url }) {
@@ -16,22 +22,27 @@ class Marvin {
   }
 
   start() {
+    const { queue, minInterval, randInterval } = this;
+    const timeout = Math.random(minInterval) + randInterval;
     setInterval(() => {
       (async () => {
-        const curr = await this.queue.next();
+        const curr = await queue.next();
         if (!curr) {
           return;
         }
         const { url } = curr;
         try {
+          console.log(`Scraping ${url}`);
           await this.scrapePage(url);
         } catch (e) {}
       })();
-    }, 0);
+    }, 200);
   }
 
   async scrapePage(url) {
+    console.log('scraped.');
     try {
+      console.log('awaiting..');
       const result = await axios.get(url);
       const $ = cheerio.load(result.data);
       $('a').each((i, link) => {
@@ -45,7 +56,7 @@ class Marvin {
             });
             // TODO there is issue with duplicate URLs
             if (isAdded) {
-              console.log(`expanding ${expandedUrl}`);
+              // console.log(`expanding ${expandedUrl}`);
             }
           }
         })();

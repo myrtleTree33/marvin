@@ -7,7 +7,7 @@ import {
   isBaseOf,
   resolveUrl,
   isAbsoluteUrl
-} from './lib/Util';
+} from './lib/UrlUtils';
 import { isAbsolute } from 'path';
 
 // (async () => {
@@ -42,7 +42,8 @@ const marvin = new Marvin({});
 marvin.load({
   // url: 'http://channelnewsasia.com/'
   // url: 'http://malaysiakini.com/'
-  url: 'http://voiz.asia/'
+  // url: 'http://voiz.asia/'
+  url: 'https://www.kompasiana.com/'
 });
 marvin.start();
 
