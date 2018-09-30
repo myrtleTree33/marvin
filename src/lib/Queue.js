@@ -9,15 +9,16 @@ class Queue {
   }
 
   add(item) {
-    if (this.contains(item)) {
-      return;
+    if (this.explored(item)) {
+      return false;
     }
     this.queue.push(item);
     const { url } = item;
     this.urls = { ...this.urls, url };
+    return true;
   }
 
-  contains(item) {
+  explored(item) {
     const { url } = item;
     if (!url) {
       return false;
@@ -30,7 +31,6 @@ class Queue {
     if (!item) {
       return null;
     }
-    delete this.urls[item.url];
     return item;
   }
 

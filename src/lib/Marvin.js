@@ -1,6 +1,7 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
 import Queue from './Queue';
+import { getAbsoluteUrl, isBaseOf, isAbsoluteUrl, resolveUrl } from './Util';
 
 class Marvin {
   constructor({ queue = new Queue() }) {
@@ -8,6 +9,7 @@ class Marvin {
   }
 
   load({ url }) {
+    this.rootUrl = url;
     this.queue.add({ url, priority: -1 });
   }
 
@@ -15,9 +17,10 @@ class Marvin {
     setInterval(() => {
       (async () => {
         const curr = this.queue.next();
-        if (curr == null) {
+        if (!curr) {
           return;
         }
+        console.log('retrieving');
         const { url } = curr;
         try {
           this.scrapePage(url);
@@ -27,14 +30,23 @@ class Marvin {
   }
 
   async scrapePage(url) {
-    const result = await axios.get(url);
-    const $ = cheerio.load(result.data);
-    // console.log(`expanded ${url}`);
-    $('a').each((i, link) => {
-      const expandedUrl = $(link).attr('href');
-      console.log(`expanding ${expandedUrl}`);
-      this.queue.add({ url: expandedUrl, priority: 1 });
-    });
+    try {
+      const result = await axios.get(url);
+      const $ = cheerio.load(result.data);
+      $('a').each((i, link) => {
+        const expandedRelUrl = $(link).attr('href');
+        const expandedUrl = resolveUrl(this.rootUrl, expandedRelUrl);
+        if (expandedUrl) {
+          const isAdded = this.queue.add({ url: expandedUrl, priority: 1 });
+          // TODO there is issue with duplicate URLs
+          if (isAdded) {
+            console.log(`expanding ${expandedUrl}`);
+          }
+        }
+      });
+    } catch (e) {
+      console.error(`Unable to retrieve page ${url}`);
+    }
   }
 }
 
