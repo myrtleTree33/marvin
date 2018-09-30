@@ -8,38 +8,38 @@ class Queue {
     this.urls = {}; // maintain a set for comparison
   }
 
-  add(item) {
-    if (this.explored(item)) {
-      return false;
+  async add(item) {
+    if (await this.explored(item)) {
+      return Promise.resolve(false);
     }
     this.queue.push(item);
     const { url } = item;
-    this.urls = { ...this.urls, url };
-    return true;
+    this.urls[url] = item;
+    return Promise.resolve(true);
   }
 
-  explored(item) {
+  async explored(item) {
     const { url } = item;
     if (!url) {
-      return false;
+      return Promise.resolve(false);
     }
-    return url in this.urls;
+    return Promise.resolve(url in this.urls);
   }
 
-  next() {
+  async next() {
     const item = this.queue.pop();
     if (!item) {
-      return null;
+      return Promise.resolve(null);
     }
-    return item;
+    return Promise.resolve(item);
   }
 
-  size() {
-    return this.queue.size();
+  async size() {
+    return Promise.resolve(this.queue.size());
   }
 
-  empty() {
-    return this.queue.size() === 0;
+  async empty() {
+    return Promise.resolve(this.queue.size() === 0);
   }
 }
 

@@ -41,7 +41,8 @@ import { isAbsolute } from 'path';
 const marvin = new Marvin({});
 marvin.load({
   // url: 'http://channelnewsasia.com/'
-  url: 'http://malaysiakini.com/'
+  // url: 'http://malaysiakini.com/'
+  url: 'http://voiz.asia/'
 });
 marvin.start();
 
