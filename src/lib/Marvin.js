@@ -1,15 +1,15 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
-import Queue from './Queue';
+import MemoryCache from './caches/MemoryCache';
 import { resolveUrl } from './UrlUtils';
 
 class Marvin {
   constructor({
-    queue = new Queue(),
+    cache = new MemoryCache(),
     minInterval = 2000,
     randInterval = 5000
   }) {
-    this.queue = queue;
+    this.cache = cache;
     this.minInterval = minInterval;
     this.randInterval = randInterval;
   }
@@ -17,16 +17,16 @@ class Marvin {
   load({ url }) {
     (async () => {
       this.rootUrl = url;
-      await this.queue.add({ url, priority: -1 });
+      await this.cache.add({ url, priority: -1 });
     })();
   }
 
   start() {
-    const { queue, minInterval, randInterval } = this;
+    const { cache, minInterval, randInterval } = this;
     const timeout = Math.random(minInterval) + randInterval;
     setInterval(() => {
       (async () => {
-        const curr = await queue.next();
+        const curr = await cache.next();
         if (!curr) {
           return;
         }
@@ -50,13 +50,13 @@ class Marvin {
           const expandedRelUrl = $(link).attr('href');
           const expandedUrl = resolveUrl(this.rootUrl, expandedRelUrl);
           if (expandedUrl) {
-            const isAdded = await this.queue.add({
+            const isAdded = await this.cache.add({
               url: expandedUrl,
               priority: 1
             });
             // TODO there is issue with duplicate URLs
             if (isAdded) {
-              // console.log(`expanding ${expandedUrl}`);
+              // console.log(`Added ${expandedUrl}`);
             }
           }
         })();
@@ -68,13 +68,3 @@ class Marvin {
 }
 
 export default Marvin;
-
-// (async () => {
-//   const nextLink = this.queue.next();
-//   if (nextLink == null) {
-//     return null;
-//   }
-//   const { url } = nextLink;
-//   try {
-//   } catch (e) {}
-// })();

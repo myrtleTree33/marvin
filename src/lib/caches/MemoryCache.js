@@ -1,6 +1,6 @@
 import PriorityQueue from 'priorityqueue';
 
-class Queue {
+class MemoryCache {
   constructor() {
     this.queue = new PriorityQueue({
       comparator: (a, b) => a.priority < b.priority
@@ -43,4 +43,4 @@ class Queue {
   }
 }
 
-export default Queue;
+export default MemoryCache;
