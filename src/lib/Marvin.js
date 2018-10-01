@@ -1,15 +1,18 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
 import MemoryCache from './caches/MemoryCache';
-import { resolveUrl } from './UrlUtils';
+import { resolveUrl, getBaseUrl } from './UrlUtils';
+import MemoryStore from './stores/MemoryStore';
 
 class Marvin {
   constructor({
     cache = new MemoryCache(),
+    store = new MemoryStore(),
     minInterval = 2000,
     randInterval = 5000
   }) {
     this.cache = cache;
+    this.store = store;
     this.minInterval = minInterval;
     this.randInterval = randInterval;
   }
@@ -45,6 +48,10 @@ class Marvin {
       console.log('awaiting..');
       const result = await axios.get(url);
       const $ = cheerio.load(result.data);
+
+      // store the page asynchronously
+      this.store.upsert({ url, htmlText: result.data });
+
       $('a').each((i, link) => {
         (async () => {
           const expandedRelUrl = $(link).attr('href');
@@ -52,6 +59,7 @@ class Marvin {
           if (expandedUrl) {
             const isAdded = await this.cache.add({
               url: expandedUrl,
+              baseUrl: getBaseUrl(expandedUrl),
               priority: 1
             });
             // TODO there is issue with duplicate URLs

@@ -9,6 +9,10 @@ export function getAbsoluteUrl(baseUrl, relUrl) {
   }
 }
 
+export function getBaseUrl(absoluteUrl) {
+  return new URL(absoluteUrl).origin;
+}
+
 export function isBaseOf(baseUrlStr, absoluteUrlStr) {
   try {
     const baseUrl = new URL(baseUrlStr);
