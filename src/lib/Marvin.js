@@ -37,24 +37,24 @@ class Marvin {
     const timeout = Math.random(minInterval) + randInterval;
     setInterval(() => {
       (async () => {
-        const curr = await cache.next();
-        if (!curr) {
+        const currItem = await cache.next();
+        if (!currItem) {
           return;
         }
-        const { url } = curr;
+        const { url } = currItem;
         try {
           console.log(`Scraping ${url}`);
-          await this.scrapePage(url);
+          await this.scrapePage(currItem);
         } catch (e) {}
       })();
-    }, 200);
+    }, 2000);
     return this;
   }
 
-  async scrapePage(url) {
+  async scrapePage(item) {
+    const { url } = item;
     console.log('scraped.');
     try {
-      console.log('awaiting..');
       const result = await axios.get(url);
       const $ = cheerio.load(result.data);
 
@@ -78,7 +78,9 @@ class Marvin {
           }
         })();
       });
+      await this.cache.delist(item);
     } catch (e) {
+      console.log(e);
       console.error(`Unable to retrieve page ${url}`);
     }
   }

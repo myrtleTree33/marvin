@@ -9,8 +9,8 @@ const itemSchema = new Schema({
 });
 
 class MongoStore {
-  constructor(uri) {
-    mongoose.connect(uri);
+  constructor(mongooseConn) {
+    this.mongoose = mongooseConn;
     this.Item = mongoose.model('Item', itemSchema);
   }
 

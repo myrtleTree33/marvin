@@ -1,21 +1,30 @@
 class Cache {
   async add(item) {
-    // TOOD implement
+    // TODO implement
   }
 
   async explored(item) {
-    // TOOD implement
+    // TODO implement
   }
 
   async next(item) {
-    // TOOD implement
+    // TODO implement
   }
 
+  /**
+   * Only used for distributed caches.
+   * When called, delists crawled URLs from the
+   * temporary collection.  This ensures that the
+   * page will be scraped, and caught if the program
+   * crashes.
+   */
+  async delist(item) {}
+
   async size() {
-    // TOOD implement
+    // TODO implement
   }
 
   async empty() {
-    // TOOD implement
+    // TODO implement
   }
 }

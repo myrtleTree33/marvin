@@ -1,5 +1,11 @@
 import PriorityQueue from 'priorityqueue';
 
+/**
+ * This is an implementation of an in-memory queue.
+ * As this queue is only shared by the current instance,
+ * methods to guarantee that URLs are scraped when they
+ * are pulled are not implemented.
+ */
 class MemoryCache {
   constructor() {
     this.queue = new PriorityQueue({
@@ -15,7 +21,7 @@ class MemoryCache {
     this.queue.push(item);
     const { url } = item;
     this.urls[url] = item;
-    return Promise.resolve(true);
+    return Promise.resolve(item);
   }
 
   async explored(item) {
@@ -33,6 +39,8 @@ class MemoryCache {
     }
     return Promise.resolve(item);
   }
+
+  async delist(item) {}
 
   async size() {
     return Promise.resolve(this.queue.size());
