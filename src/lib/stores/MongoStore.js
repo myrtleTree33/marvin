@@ -19,12 +19,16 @@ class MongoStore {
   }
 
   async upsert(item) {
-    console.log('saved item!');
-    const itemDb = new this.Item({
-      url: item.url,
-      htmlText: item.htmlText
-    });
-    return itemDb.save();
+    const { url, htmlText } = item;
+    const updatedItem = await this.Item.findOneAndUpdate(
+      { url },
+      { url, htmlText }
+    );
+    if (!updatedItem) {
+      return new this.Item({ url, htmlText }).save();
+    }
+    console.log('existing item found!!!!!');
+    return Promise.resolve(updatedItem);
   }
 
   async remove(url) {

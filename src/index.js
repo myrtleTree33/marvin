@@ -3,12 +3,7 @@ import MemoryStore from './lib/stores/MemoryStore';
 import MongoStore from './lib/stores/MongoStore';
 
 const marvin = new Marvin({
-  store: new MongoStore('mongodb://localhost/test')
-});
-marvin.load({
-  // url: 'http://channelnewsasia.com/'
-  // url: 'http://malaysiakini.com/'
-  // url: 'http://voiz.asia/'
+  store: new MongoStore('mongodb://localhost/test'),
   url: 'https://www.kompasiana.com/'
 });
 marvin.start();

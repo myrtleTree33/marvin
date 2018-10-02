@@ -8,6 +8,7 @@ class Marvin {
   constructor({
     cache = new MemoryCache(),
     store = new MemoryStore(),
+    url = null,
     minInterval = 2000,
     randInterval = 5000
   }) {
@@ -15,6 +16,12 @@ class Marvin {
     this.store = store;
     this.minInterval = minInterval;
     this.randInterval = randInterval;
+    this.url = url;
+
+    // load URL by default, if specified.
+    if (this.url) {
+      this.load({ url });
+    }
   }
 
   load({ url }) {
@@ -22,6 +29,7 @@ class Marvin {
       this.rootUrl = url;
       await this.cache.add({ url, priority: -1 });
     })();
+    return this;
   }
 
   start() {
@@ -40,6 +48,7 @@ class Marvin {
         } catch (e) {}
       })();
     }, 200);
+    return this;
   }
 
   async scrapePage(url) {
