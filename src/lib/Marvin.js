@@ -47,7 +47,7 @@ class Marvin {
           await this.scrapePage(currItem);
         } catch (e) {}
       })();
-    }, 2000);
+    }, 500);
     return this;
   }
 
@@ -60,6 +60,7 @@ class Marvin {
 
       // store the page asynchronously
       this.store.upsert({ url, htmlText: result.data });
+      console.log($('a').length + ' links found');
 
       $('a').each((i, link) => {
         (async () => {

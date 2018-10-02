@@ -3,7 +3,10 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const cacheItemSchema = new Schema({
-  url: String,
+  url: {
+    type: String,
+    unique: true
+  },
   baseUrl: String,
   priority: Number,
   isScraping: {
@@ -20,11 +23,22 @@ class MongoCache {
   }
 
   async add(item) {
+    // TODO there is some issue, casusing multiple add
     if (await this.explored(item)) {
       return Promise.resolve(false);
     }
     const { url, baseUrl, priority, dateAdded } = item;
-    return this.CacheItem({ url, baseUrl, priority, dateAdded }).save();
+    try {
+      const cacheItem = await this.CacheItem({
+        url,
+        baseUrl,
+        priority,
+        dateAdded
+      }).save();
+      return Promise.resolve(true);
+    } catch (e) {
+      return Promise.resolve(false);
+    }
   }
 
   async explored(item) {
@@ -42,7 +56,8 @@ class MongoCache {
     });
     const cacheItem = cacheItems.length === 1 ? cacheItems[0] : null;
     const { url } = cacheItem;
-    return this.CacheItem.findOneAndUpdate({ url }, { isScraping: true });
+    // return this.CacheItem.findOneAndUpdate({ url }, { isScraping: true });
+    return this.CacheItem.findOne({ url });
   }
 
   async size() {
