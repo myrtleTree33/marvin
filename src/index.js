@@ -1,6 +1,10 @@
 import Marvin from './lib/Marvin';
+import MemoryStore from './lib/stores/MemoryStore';
+import MongoStore from './lib/stores/MongoStore';
 
-const marvin = new Marvin({});
+const marvin = new Marvin({
+  store: new MongoStore('mongodb://localhost/test')
+});
 marvin.load({
   // url: 'http://channelnewsasia.com/'
   // url: 'http://malaysiakini.com/'
