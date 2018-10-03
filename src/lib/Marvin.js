@@ -4,6 +4,8 @@ import MemoryCache from './caches/MemoryCache';
 import { resolveUrl, getBaseUrl } from './UrlUtils';
 import MemoryStore from './stores/MemoryStore';
 
+import sleep from 'await-sleep';
+
 class Marvin {
   constructor({
     cache = new MemoryCache(),
@@ -35,7 +37,10 @@ class Marvin {
   start() {
     const { cache, minInterval, randInterval } = this;
     const timeout = Math.random(minInterval) + randInterval;
-    setInterval(() => {
+    let toReschedule = true;
+
+    const runJob = () => {
+      console.log('runing task..');
       (async () => {
         const currItem = await cache.next();
         if (!currItem) {
@@ -46,9 +51,25 @@ class Marvin {
           console.log(`Scraping ${url}`);
           await this.scrapePage(currItem);
         } catch (e) {}
+        setTimeout(runJob, 200);
       })();
-    }, 500);
-    return this;
+    };
+    runJob();
+
+    // setInterval(() => {
+    //   (async () => {
+    //     const currItem = await cache.next();
+    //     if (!currItem) {
+    //       return;
+    //     }
+    //     const { url } = currItem;
+    //     try {
+    //       console.log(`Scraping ${url}`);
+    //       await this.scrapePage(currItem);
+    //     } catch (e) {}
+    //   })();
+    // }, 500);
+    // return this;
   }
 
   async scrapePage(item) {
