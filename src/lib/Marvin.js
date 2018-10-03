@@ -11,8 +11,8 @@ class Marvin {
     cache = new MemoryCache(),
     store = new MemoryStore(),
     url = null,
-    minInterval = 2000,
-    randInterval = 5000
+    minInterval = 200,
+    randInterval = 2000
   }) {
     this.cache = cache;
     this.store = store;
@@ -36,8 +36,7 @@ class Marvin {
 
   start() {
     const { cache, minInterval, randInterval } = this;
-    const timeout = Math.random(minInterval) + randInterval;
-    let toReschedule = true;
+    const timeDelay = Math.random(minInterval) + randInterval;
 
     const runJob = () => {
       console.log('runing task..');
@@ -51,7 +50,7 @@ class Marvin {
           console.log(`Scraping ${url}`);
           await this.scrapePage(currItem);
         } catch (e) {}
-        setTimeout(runJob, 200);
+        setTimeout(runJob, timeDelay);
       })();
     };
     runJob();
