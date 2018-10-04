@@ -29,6 +29,23 @@ export function isAbsoluteUrl(urlStr) {
 }
 
 export function isValidUrl(urlStr) {
+  // null strings are not valid URLs!!
+  if (!urlStr) {
+    return false;
+  }
+
+  // try to parse url.  If not successful, fail.
+  try {
+    const url = new URL(urlStr);
+  } catch (e) {
+    return false;
+  }
+
+  if (!isAbsoluteUrl(urlStr)) {
+    return false;
+  }
+
+  // then, check url are not hotlinks, etc.
   return (
     !urlStr.startsWith('#') &&
     !urlStr.startsWith('tel:') &&

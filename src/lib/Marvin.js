@@ -43,6 +43,8 @@ class Marvin {
       (async () => {
         const currItem = await cache.next();
         if (!currItem) {
+          console.log('got here');
+          setTimeout(runJob, timeDelay);
           return;
         }
         const { url } = currItem;
@@ -75,6 +77,9 @@ class Marvin {
     const { url } = item;
     console.log('scraped.');
     try {
+      console.log('------------------');
+      console.log(url);
+      console.log('------------------');
       const result = await axios.get(url);
       const $ = cheerio.load(result.data);
 
