@@ -40,11 +40,13 @@ class MongoCache {
   }
 
   async explored(item) {
+    // if item is in cache or is being explored,
+    // then it is explored.
     const { url } = item;
-    const cacheItems = await this.CacheItem.findOne({ url });
-    // const cacheItemsExploring = await this.CacheItemExploring.findOne({ url });
-    // return Promise.resolve(cacheItems || cacheItemsExploring);
-    return Promise.resolve(cacheItems);
+    const cacheItems = this.CacheItem.findOne({ url });
+    const cacheItemsExploring = this.CacheItemExploring.findOne({ url });
+    const result = await Promise.all(cacheItems || cacheItemsExploring);
+    return Promise.resolve(result[0] || result[1]);
   }
 
   async next() {

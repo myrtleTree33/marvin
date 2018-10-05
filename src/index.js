@@ -10,6 +10,8 @@ mongoose.connect(uri);
 const marvin = new Marvin({
   store: new MongoStore(mongoose),
   cache: new MongoCache(mongoose),
+  minInterval: 20,
+  randInterval: 50,
   url: 'https://www.kompasiana.com/'
 });
 marvin.start();
