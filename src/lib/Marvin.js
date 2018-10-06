@@ -3,14 +3,13 @@ import axios from 'axios';
 import MemoryCache from './caches/MemoryCache';
 import { resolveUrl, getBaseUrl } from './UrlUtils';
 import MemoryStore from './stores/MemoryStore';
-
-import sleep from 'await-sleep';
+import logger from './util/logger';
 
 class Marvin {
   constructor({
     cache = new MemoryCache(),
     store = new MemoryStore(),
-    url = null,
+    rootUrl = null,
     minInterval = 200,
     randInterval = 2000
   }) {
@@ -18,18 +17,19 @@ class Marvin {
     this.store = store;
     this.minInterval = minInterval;
     this.randInterval = randInterval;
-    this.url = url;
 
     // load URL by default, if specified.
-    if (this.url) {
-      this.load({ url });
+    if (rootUrl) {
+      this.load({ rootUrl, priority: -1 });
+      logger.info(`URL=${rootUrl} specified, adding to queue.`);
+      return;
     }
+    logger.info('No rootURL specified; proceeding to draw from queue.');
   }
 
-  load({ url }) {
+  load({ rootUrl, priority = -1 }) {
     (async () => {
-      this.rootUrl = url;
-      await this.cache.add({ url, priority: -1 });
+      await this.cache.add({ url: rootUrl, rootUrl, priority });
     })();
     return this;
   }
@@ -39,68 +39,44 @@ class Marvin {
     const timeDelay = Math.random(minInterval) + randInterval;
 
     const runJob = () => {
-      console.log('runing task..');
       (async () => {
         let currItem = await cache.next();
         while (!currItem) {
-          console.log('NULL ITEM==');
           currItem = await cache.next();
         }
-        // if (!currItem) {
-        //   console.log('NULL ITEM==');
-        //   setTimeout(runJob, timeDelay);
-        //   return;
-        // }
-        const { url } = currItem;
+
         try {
-          console.log(`Scraping ${url}`);
           await this.scrapePage(currItem);
         } catch (e) {}
         setTimeout(runJob, timeDelay);
       })();
     };
     runJob();
-
-    // setInterval(() => {
-    //   (async () => {
-    //     const currItem = await cache.next();
-    //     if (!currItem) {
-    //       return;
-    //     }
-    //     const { url } = currItem;
-    //     try {
-    //       console.log(`Scraping ${url}`);
-    //       await this.scrapePage(currItem);
-    //     } catch (e) {}
-    //   })();
-    // }, 500);
-    // return this;
   }
 
   async scrapePage(item) {
-    const { url } = item;
-    console.log('scraped.');
+    const { url, rootUrl } = item;
     try {
       const result = await axios.get(url);
       const $ = cheerio.load(result.data);
-
       // store the page asynchronously
       this.store.upsert({ url, htmlText: result.data });
-      console.log($('a').length + ' links found');
+      const numLinks = $('a').length;
+      logger.info(`Scraping url=${url} ${numLinks} links found`);
 
       $('a').each((i, link) => {
         (async () => {
           const expandedRelUrl = $(link).attr('href');
-          const expandedUrl = resolveUrl(this.rootUrl, expandedRelUrl);
+          const expandedUrl = resolveUrl(rootUrl, expandedRelUrl);
           if (expandedUrl) {
             const isAdded = await this.cache.add({
               url: expandedUrl,
-              baseUrl: getBaseUrl(expandedUrl),
+              rootUrl: getBaseUrl(expandedUrl),
               priority: 1
             });
             // TODO there is issue with duplicate URLs
             if (isAdded) {
-              // console.log(`Added ${expandedUrl}`);
+              console.log(`Added ${expandedUrl}`);
             }
           }
         })();

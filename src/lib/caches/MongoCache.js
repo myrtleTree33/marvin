@@ -6,9 +6,13 @@ const { Schema } = mongoose;
 const cacheItemSchema = new Schema({
   url: {
     type: String,
-    unique: true
+    unique: true,
+    required: true
   },
-  baseUrl: String,
+  rootUrl: {
+    type: String,
+    required: true
+  },
   priority: Number,
   dateAdded: { type: Date, default: Date.now }
 });
@@ -45,8 +49,9 @@ class MongoCache {
     const { url } = item;
     const cacheItems = this.CacheItem.findOne({ url });
     const cacheItemsExploring = this.CacheItemExploring.findOne({ url });
-    const result = await Promise.all(cacheItems || cacheItemsExploring);
-    return Promise.resolve(result[0] || result[1]);
+    const result = await Promise.all([cacheItems, cacheItemsExploring]);
+    // TODO there is an error querying the db here
+    return Promise.resolve(result[0] || result[0]);
   }
 
   async next() {
@@ -64,7 +69,7 @@ class MongoCache {
     }
     const newItem = {
       url: item.url,
-      baseUrl: item.baseUrl,
+      rootUrl: item.rootUrl,
       priority: item.priority,
       dateAdded: item.dateAdded
     };

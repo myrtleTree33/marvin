@@ -9,11 +9,11 @@ const uri = 'mongodb://localhost/test';
 mongoose.connect(uri);
 
 const marvin = new Marvin({
+  rootUrl: 'https://www.kompasiana.com/',
   store: new MongoStore(mongoose),
   cache: new MongoCache(mongoose),
   minInterval: 20,
-  randInterval: 50,
-  url: 'https://www.kompasiana.com/'
+  randInterval: 50
 });
 marvin.start();
 logger.info('Marvin started.');
