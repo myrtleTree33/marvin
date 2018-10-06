@@ -13,7 +13,7 @@ const marvin = new Marvin({
   store: new MongoStore(mongoose),
   cache: new MongoCache(mongoose),
   minInterval: 20,
-  randInterval: 50
+  randInterval: 20
 });
 marvin.start();
 logger.info('Marvin started.');
