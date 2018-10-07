@@ -4,6 +4,8 @@ import MemoryCache from './caches/MemoryCache';
 import { resolveUrl, getBaseUrl } from './UrlUtils';
 import MemoryStore from './stores/MemoryStore';
 import logger from './util/logger';
+import sleep from 'await-sleep';
+import { genNumArray } from './Utils';
 
 class Marvin {
   constructor({
@@ -11,12 +13,16 @@ class Marvin {
     store = new MemoryStore(),
     rootUrl = null,
     minInterval = 200,
-    randInterval = 2000
+    randInterval = 2000,
+    numJobs = 1,
+    jobsIntervalMaxSeedMs = 2000
   }) {
     this.cache = cache;
     this.store = store;
     this.minInterval = minInterval;
     this.randInterval = randInterval;
+    this.numJobs = numJobs;
+    this.jobsIntervalMaxSeedMs = jobsIntervalMaxSeedMs;
 
     // load URL by default, if specified.
     if (rootUrl) {
@@ -38,7 +44,7 @@ class Marvin {
     const { cache, minInterval, randInterval } = this;
     const timeDelay = Math.random(minInterval) + randInterval;
 
-    const runJob = () => {
+    const runJob = jobId => {
       (async () => {
         let currItem = await cache.next();
         while (!currItem) {
@@ -46,15 +52,27 @@ class Marvin {
         }
 
         try {
-          await this.scrapePage(currItem);
+          await this.scrapePage(jobId, currItem);
         } catch (e) {}
-        setTimeout(runJob, timeDelay);
+        setTimeout(() => {
+          runJob(jobId);
+        }, timeDelay);
       })();
     };
-    runJob();
+
+    // create an array to pass index to each worker
+    const numArray = genNumArray(this.numJobs);
+    numArray.forEach(i => {
+      logger.info(`Started job ${i}..`);
+      (async () => {
+        runJob(i);
+        const sleepIntervalMs = Math.random() * this.jobsIntervalMaxSeedMs;
+        await sleep(sleepIntervalMs);
+      })();
+    });
   }
 
-  async scrapePage(item) {
+  async scrapePage(jobId, item) {
     const { url, rootUrl } = item;
     try {
       const result = await axios.get(url);
@@ -62,7 +80,9 @@ class Marvin {
       // store the page asynchronously
       this.store.upsert({ url, htmlText: result.data });
       const numLinks = $('a').length;
-      logger.info(`Scraping url=${url} ${numLinks} links found`);
+      logger.info(
+        `[JobId=${jobId}] Scraping url=${url} ${numLinks} links found`
+      );
 
       $('a').each((i, link) => {
         (async () => {
@@ -76,7 +96,7 @@ class Marvin {
             });
             // TODO there is issue with duplicate URLs
             if (isAdded) {
-              console.log(`Added ${expandedUrl}`);
+              console.log(`[JobId=${jobId}] Added ${expandedUrl}`);
             }
           }
         })();

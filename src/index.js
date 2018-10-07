@@ -1,7 +1,7 @@
-import Marvin from './lib/Marvin';
 import mongoose from 'mongoose';
+
+import Marvin from './lib/Marvin';
 import logger from './lib/util/logger';
-import MemoryStore from './lib/stores/MemoryStore';
 import MongoStore from './lib/stores/MongoStore';
 import MongoCache from './lib/caches/MongoCache';
 
@@ -13,7 +13,9 @@ const marvin = new Marvin({
   store: new MongoStore(mongoose),
   cache: new MongoCache(mongoose),
   minInterval: 20,
-  randInterval: 20
+  randInterval: 20,
+  numJobs: 2,
+  jobsIntervalMaxSeedMs: 2000
 });
 marvin.start();
 logger.info('Marvin started.');
