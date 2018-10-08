@@ -110,8 +110,9 @@ class Marvin {
       });
       await this.cache.delist(item);
     } catch (e) {
-      console.log(e);
-      console.error(`Unable to retrieve page ${url}`);
+      logger.error(`Unable to retrieve page ${url}`);
+      logger.error(e);
+      // TODO put link in the retry queue, if need be.
     }
   }
 }
