@@ -27,7 +27,7 @@ class Marvin {
 
     // load URL by default, if specified.
     if (rootUrl) {
-      this.load({ rootUrl, priority: -1 });
+      this.loadUrl({ rootUrl, priority: -1 });
       logger.info(`URL=${rootUrl} specified, adding to queue.`);
       return;
     }
@@ -42,6 +42,7 @@ class Marvin {
   }
 
   start() {
+    logger.info('Marvin started.');
     const { cache, minInterval, randInterval } = this;
     const timeDelay = minInterval + Math.random() * randInterval;
 
