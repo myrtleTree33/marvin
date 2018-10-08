@@ -103,7 +103,7 @@ class Marvin {
             });
             // TODO there is issue with duplicate URLs
             if (isAdded) {
-              console.log(`[JobId=${jobId}] Added ${expandedUrl}`);
+              logger.info(`[JobId=${jobId}] Added ${expandedUrl}`);
             }
           }
         })();
