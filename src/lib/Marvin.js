@@ -72,9 +72,9 @@ class Marvin {
     numArray.forEach(i => {
       logger.info(`Started job ${i}..`);
       (async () => {
-        runJob(i);
         const sleepIntervalMs = Math.random() * this.jobsIntervalMaxSeedMs;
         await sleep(sleepIntervalMs);
+        runJob(i);
       })();
     });
   }
