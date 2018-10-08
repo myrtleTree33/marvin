@@ -1,7 +1,7 @@
 {
-  "name": "node-es6-starter",
+  "name": "marvin",
   "version": "1.0.0",
-  "description": "Node.js ES6 starter with Babel & ESLint",
+  "description": "A distributed node web scraper",
   "main": "dist/index.js",
   "babel": {
     "presets": [
@@ -18,6 +18,9 @@
   },
   "eslintConfig": {
     "extends": "airbnb/base"
+  },
+  "bin": {
+    "marvin": "dist/index.js"
   },
   "scripts": {
     "lint": "eslint src/**",

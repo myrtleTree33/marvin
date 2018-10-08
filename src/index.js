@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import mongoose from 'mongoose';
 import app from 'commander';
 
