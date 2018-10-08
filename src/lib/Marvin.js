@@ -1,10 +1,11 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
+import sleep from 'await-sleep';
+
 import MemoryCache from './caches/MemoryCache';
 import { resolveUrl, getBaseUrl } from './UrlUtils';
 import MemoryStore from './stores/MemoryStore';
 import logger from './util/logger';
-import sleep from 'await-sleep';
 import { genNumArray } from './Utils';
 
 class Marvin {
@@ -33,7 +34,7 @@ class Marvin {
     logger.info('No rootURL specified; proceeding to draw from queue.');
   }
 
-  load({ rootUrl, priority = -1 }) {
+  loadUrl({ rootUrl, priority = -1 }) {
     (async () => {
       await this.cache.add({ url: rootUrl, rootUrl, priority });
     })();
@@ -42,13 +43,19 @@ class Marvin {
 
   start() {
     const { cache, minInterval, randInterval } = this;
-    const timeDelay = Math.random(minInterval) + randInterval;
+    const timeDelay = minInterval + Math.random() * randInterval;
 
     const runJob = jobId => {
       (async () => {
         let currItem = await cache.next();
         while (!currItem) {
           currItem = await cache.next();
+          if (!currItem) {
+            // this is to prevent overpolling
+            // if there is no item to retrieve
+            logger.info(`[jobId=${jobId}] No item in queue, sleeping..`);
+            sleep(timeDelay);
+          }
         }
 
         try {
