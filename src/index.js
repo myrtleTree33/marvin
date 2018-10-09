@@ -29,7 +29,7 @@ export default function runMain() {
       2000
     )
     .option(
-      's, --scrapeUrl [url]',
+      '-s, --scrapeUrl [url]',
       'The URL to start scraping.  If not specified, pulls one from the dsitributed queue.'
     )
     .parse(process.argv);
