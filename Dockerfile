@@ -1,17 +1,9 @@
-FROM node:8
+FROM node:8.12.0-jessie
+
+ENV PATH="=/home/node/.npm-global/bin:${PATH}"
 
 # Create app directory
-WORKDIR /usr/src/app
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY . .
-
-## Install Marvin as a global package
-RUN npm install -g .
-# If you are building your code for production
-# RUN npm install --only=production
-
-# EXPOSE 8080
-CMD [ "marvin", "-n 10" ]
+WORKDIR /home/node/app
+ADD . /home/node/app
+RUN npm install . --unsafe-perm
+CMD [ "npm", "start" ]

@@ -37,8 +37,6 @@ export default function runMain() {
   const uri = 'mongodb://localhost/test';
   mongoose.connect(uri);
 
-  console.log(app);
-
   const marvin = new Marvin({
     // rootUrl: 'https://www.kompasiana.com/',
     rootUrl: app.scrapeUrl,
