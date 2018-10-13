@@ -11,5 +11,7 @@ RUN npm install . --unsafe-perm
 CMD [ \
     "npm", "start", "--", \
     "-n", "${NUM_NODES}" \
-    "-U", "${MONGO)URI}" \
+    "-U", "${MONGO_URI}" \
     ]
+
+# ENTRYPOINT [ "/bin/bash", "-c", "npm start -- -n ${NUM_NODES}" ]
