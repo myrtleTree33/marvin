@@ -8,10 +8,5 @@ ENV MONGO_URI="mongodb://localhost/test"
 WORKDIR /home/node/app
 ADD . /home/node/app
 RUN npm install . --unsafe-perm
-CMD [ \
-    "npm", "start", "--", \
-    "-n", "${NUM_NODES}" \
-    "-U", "${MONGO_URI}" \
-    ]
-
-# ENTRYPOINT [ "/bin/bash", "-c", "npm start -- -n 10" ]
+# Run in bash instead of sh
+ENTRYPOINT [ "/bin/bash", "-c", "npm start -- -n ${NUM_NODES} -u ${MONGO_URI}" ]
