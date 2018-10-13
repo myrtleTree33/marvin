@@ -11,7 +11,7 @@ import MongoCache from './lib/caches/MongoCache';
 export default function runMain() {
   app
     .version('0.0.1')
-    .option('-U, --uri [uri]', 'Mongo URI to use', 'mongodb://localhost/test')
+    .option('-u, --uri [uri]', 'Mongo URI to use', 'mongodb://localhost/test')
     .option(
       '-M, --min-interval [mSecs]',
       'The minimum interval between requests, in milliseconds',
@@ -34,8 +34,7 @@ export default function runMain() {
     )
     .parse(process.argv);
 
-  const uri = 'mongodb://localhost/test';
-  mongoose.connect(uri);
+  mongoose.connect(app.uri);
 
   const marvin = new Marvin({
     // rootUrl: 'https://www.kompasiana.com/',
