@@ -1,4 +1,4 @@
-FROM node:8.12.0-jessie
+FROM node:8.12.0-alpine
 
 ENV PATH="=/home/node/.npm-global/bin:${PATH}"
 ENV NUM_NODES=10
