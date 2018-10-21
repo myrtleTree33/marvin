@@ -15,18 +15,18 @@ export default function runMain() {
     .option(
       '-M, --min-interval [mSecs]',
       'The minimum interval between requests, in milliseconds',
-      20
+      200
     )
     .option(
       '-m, --rand-interval [mSecs]',
       'The random interval to use between requests, in milliseconds',
-      20
+      1000
     )
-    .option('-n, --numJobs [numJobs]', 'The number of workers to spawn', 2)
+    .option('-n, --numJobs [numJobs]', 'The number of workers to spawn', 20)
     .option(
       '-i, --jobIntervalMs [ms]',
       'The number of milliseconds to wait before launching each job',
-      2000
+      200
     )
     .option(
       '-s, --scrapeUrl [url]',
